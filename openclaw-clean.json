@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.8"
+  },
+  "env": {
+    "NODE_OPTIONS": "--dns-result-order=ipv4first"
+  },
+  "update": {
+    "checkOnStart": true
+  },
+  "models": {
+    "providers": {
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek/deepseek-v3.2",
+            "name": "Deepseek V3.2 (OpenRouter)",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 160000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5 (OpenRouter)",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 256000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "openai/gpt-5.4",
+            "name": "GPT-5.4 (OpenRouter)",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 128000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openrouter/moonshotai/kimi-k2.5",
+        "fallbacks": [
+          "openrouter/openai/gpt-5.4",
+          "openrouter/deepseek/deepseek-v3.2"
+        ]
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "workspace": "WORKSPACE_PATH_PLACEHOLDER",
+        "identity": {
+          "name": "OpenClaw Bot",
+          "theme": "Trợ lý AI đa năng — hỗ trợ code, debug, tìm kiếm thông tin, tự động hóa. Xưng 'em' với người dùng (Sếp). Trả lời ngắn gọn, chính xác, không bịa đặt.",
+          "emoji": "🤖"
+        },
+        "tools": {
+          "elevated": {
+            "enabled": true
+          }
+        }
+      }
+    ]
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true
+      },
+      "fetch": {
+        "enabled": true
+      }
+    },
+    "message": {
+      "crossContext": {
+        "allowAcrossProviders": true
+      }
+    },
+    "exec": {
+      "host": "gateway",
+      "security": "full",
+      "ask": "auto",
+      "safeBins": [
+        "ls", "pwd", "whoami", "uname", "date",
+        "cat", "head", "tail", "wc", "du", "df",
+        "find", "rg", "sed", "awk", "grep",
+        "git", "node", "npm", "pnpm", "npx",
+        "python", "python3", "pip", "pip3",
+        "curl", "jq", "mkdir", "touch", "cp", "mv", "chmod"
+      ]
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": true,
+    "nativeSkills": false,
+    "text": true,
+    "bash": true,
+    "config": true,
+    "debug": true,
+    "restart": true
+  },
+  "cron": {
+    "enabled": false
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "web": {
+    "enabled": true
+  },
+  "channels": {
+    "telegram": {
+      "name": "openclaw-bot",
+      "enabled": false,
+      "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
+      "groupPolicy": "allowlist",
+      "groups": {
+        "*": {
+          "requireMention": true,
+          "enabled": true,
+          "allowFrom": ["*"]
+        }
+      },
+      "streaming": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "controlUi": {
+      "enabled": true,
+      "allowInsecureAuth": true
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "coding-agent": {
+        "enabled": true
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": false
+      },
+      "openzalo": {
+        "enabled": false
+      }
+    }
+  }
+}
